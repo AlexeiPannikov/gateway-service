@@ -1,7 +1,7 @@
 version: "3.8"
 
 services:
-  db:
+  auth-db:
     container_name: "auth-service-postgres"
     image: postgres
     restart: always
@@ -11,21 +11,21 @@ services:
       - POSTGRES_DB=${TYPEORM_DATABASE}
       - POSTGRES_HOST=${TYPEORM_HOST}
     volumes:
-      - ./pgdata:/var/lib/postgresql/data
+      - ./auth-pgdata:/var/lib/auth-postgresql/data
     ports:
       - ${TYPEORM_PORT}:${TYPEORM_PORT}
     command: postgres
-  pgadmin:
-    image: dpage/pgadmin4
-    container_name: "pgadmin4_container"
-    restart: always
-    ports:
-      - "8888:80"
-    environment:
-      - PGADMIN_DEFAULT_EMAIL=${PGADMIN_EMAIL}
-      - PGADMIN_DEFAULT_PASSWORD=${PGADMIN_PASSWORD}
-    volumes:
-      - ./pgadmin-data:/var/lib/pgadmin
+#  pgadmin:
+#    image: dpage/pgadmin4
+#    container_name: "pgadmin4_container"
+#    restart: always
+#    ports:
+#      - "8888:80"
+#    environment:
+#      - PGADMIN_DEFAULT_EMAIL=${PGADMIN_EMAIL}
+#      - PGADMIN_DEFAULT_PASSWORD=${PGADMIN_PASSWORD}
+#    volumes:
+#      - ./pgadmin-data:/var/lib/pgadmin
   redis:
     image: redis:alpine3.18
     container_name: "redis"
@@ -35,7 +35,10 @@ services:
     image: rabbitmq:3-management
     container_name: rabbitmq
     hostname: rabbitmq
+    env_file:
+      - .env
     volumes:
       - /var/lib/rabbitmq
     ports:
           - "5672:5672"
+          - "15672:15672"
