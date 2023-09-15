@@ -1,5 +1,7 @@
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule, ConfigService } from '@nestjs/config';
+import {UserEntity} from "../entities/User/User.entity";
+import {SessionEntity} from "../entities/Session/Session.entity";
 
 export const typeOrmModule = TypeOrmModule.forRootAsync({
   imports: [ConfigModule],
@@ -12,7 +14,7 @@ export const typeOrmModule = TypeOrmModule.forRootAsync({
       password: config.get<string>('TYPEORM_PASSWORD'),
       database: config.get<string>('TYPEORM_DATABASE'),
       port: config.get<number>('TYPEORM_PORT'),
-      entities: [__dirname + 'dist/**/*.entity{.ts,.js}'],
+      entities: [UserEntity, SessionEntity],
       synchronize: true,
       autoLoadEntities: true,
       logger: 'simple-console',

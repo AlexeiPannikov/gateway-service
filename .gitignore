@@ -12,7 +12,7 @@ yarn-error.log*
 lerna-debug.log*
 
 /pgadmin-data
-/auth-pgdata
+/*-pgdata
 
 # OS
 .DS_Store

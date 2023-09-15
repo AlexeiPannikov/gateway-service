@@ -5,7 +5,6 @@ import {
     PrimaryGeneratedColumn,
     UpdateDateColumn,
 } from "typeorm";
-import {addDays} from "../../../../core/helpers/AddDays";
 import {UserEntity} from "../User/User.entity";
 
 @Entity("sessions")

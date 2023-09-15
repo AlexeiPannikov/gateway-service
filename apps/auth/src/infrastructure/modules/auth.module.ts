@@ -19,10 +19,12 @@ import {SessionService} from "../../core/services/SessionService/SessionService"
 import {IAuthService} from "../../core/services/AuthService/interface/IAuthService";
 import {AuthService} from "../../core/services/AuthService/AuthService";
 import {UserHttpController} from "../controllers/UserControllers/UserHttpController/UserHttpController";
+import {AuthRabbitMqController} from "../controllers/AuthControllers/AuthRabbitMqController/AuthRabbitMqController";
+import {SharedService} from "@app/shared";
 
 @Module({
   imports: [TypeOrmModule.forFeature([UserEntity, SessionEntity])],
-  controllers: [AuthHttpController, UserHttpController],
+  controllers: [AuthHttpController, AuthRabbitMqController, UserHttpController],
   providers: [
     ResponseInterceptor,
     {
@@ -53,6 +55,7 @@ import {UserHttpController} from "../controllers/UserControllers/UserHttpControl
       provide: ISessionService,
       useClass: SessionService,
     },
+    SharedService,
   ],
 })
 export class AuthModule {}

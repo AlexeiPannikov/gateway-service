@@ -25,7 +25,9 @@ export class SessionRepositoryImpl implements ISessionRepository {
     async deleteByUuid(uuid: string): Promise<Session> {
         const entity = await this.sessionRepository.findOneBy({uuid})
         await this.sessionRepository.delete({uuid})
-        return SessionMappers.toDomain(entity)
+        if (entity) {
+            return SessionMappers.toDomain(entity)
+        }
     }
 
     async updateByUuid(uuid: string, dto: Partial<Session>): Promise<Session> {

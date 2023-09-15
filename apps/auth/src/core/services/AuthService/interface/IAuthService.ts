@@ -14,7 +14,7 @@ export interface IAuthService {
 
     refreshToken(refreshToken: string): Promise<{ user: User, tokens: { accessToken: string; refreshToken: string; } }>
 
-    logOut(sessionUuid: string): Promise<void>
+    logOut(refreshToken: string): Promise<boolean>
 }
 
 export const IAuthService = Symbol("IAuthService")

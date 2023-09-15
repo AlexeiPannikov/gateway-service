@@ -4,7 +4,7 @@
   "sourceRoot": "apps/nest-messenger-backend/src",
   "compilerOptions": {
     "deleteOutDir": true,
-    "webpack": true,
+    "webpack": false,
     "tsConfigPath": "apps/nest-messenger-backend/tsconfig.app.json"
   },
   "monorepo": true,
@@ -35,6 +35,15 @@
       "sourceRoot": "libs/shared/src",
       "compilerOptions": {
         "tsConfigPath": "libs/shared/tsconfig.lib.json"
+      }
+    },
+    "messenger": {
+      "type": "application",
+      "root": "apps/messenger",
+      "entryFile": "main",
+      "sourceRoot": "apps/messenger/src",
+      "compilerOptions": {
+        "tsConfigPath": "apps/messenger/tsconfig.app.json"
       }
     }
   }

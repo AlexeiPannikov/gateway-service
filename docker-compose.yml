@@ -11,26 +11,24 @@ services:
       - POSTGRES_DB=${TYPEORM_DATABASE}
       - POSTGRES_HOST=${TYPEORM_HOST}
     volumes:
-      - ./auth-pgdata:/var/lib/auth-postgresql/data
+      - ./auth-pgdata:/var/lib/postgresql/data
     ports:
       - ${TYPEORM_PORT}:${TYPEORM_PORT}
     command: postgres
-#  pgadmin:
-#    image: dpage/pgadmin4
-#    container_name: "pgadmin4_container"
-#    restart: always
-#    ports:
-#      - "8888:80"
-#    environment:
-#      - PGADMIN_DEFAULT_EMAIL=${PGADMIN_EMAIL}
-#      - PGADMIN_DEFAULT_PASSWORD=${PGADMIN_PASSWORD}
-#    volumes:
-#      - ./pgadmin-data:/var/lib/pgadmin
-  redis:
-    image: redis:alpine3.18
-    container_name: "redis"
+  messenger-db:
+    container_name: "messenger-service-postgres"
+    image: postgres
+    restart: always
+    environment:
+      - POSTGRES_USER=${TYPEORM_USERNAME}
+      - POSTGRES_PASSWORD=${TYPEORM_PASSWORD}
+      - POSTGRES_DB=${TYPEORM_MESSENGER_DATABASE}
+      - POSTGRES_HOST=${TYPEORM_HOST}
+    volumes:
+      - ./messenger-pgdata:/var/lib/postgresql/data
     ports:
-      - "6379:6379"
+      - ${TYPEORM_MESSENGER_PORT}:${TYPEORM_PORT}
+    command: postgres
   rabbitmq:
     image: rabbitmq:3-management
     container_name: rabbitmq
@@ -40,5 +38,21 @@ services:
     volumes:
       - /var/lib/rabbitmq
     ports:
-          - "5672:5672"
-          - "15672:15672"
+      - "5672:5672"
+      - "15672:15672"
+        #  pgadmin:
+        #    image: dpage/pgadmin4
+        #    container_name: "pgadmin4_container"
+        #    restart: always
+        #    ports:
+        #      - "8888:80"
+        #    environment:
+        #      - PGADMIN_DEFAULT_EMAIL=${PGADMIN_EMAIL}
+        #      - PGADMIN_DEFAULT_PASSWORD=${PGADMIN_PASSWORD}
+        #    volumes:
+        #      - ./pgadmin-data:/var/lib/pgadmin
+        #  redis:
+        #    image: redis:alpine3.18
+      #    container_name: "redis"
+      #    ports:
+      #      - "6379:6379"

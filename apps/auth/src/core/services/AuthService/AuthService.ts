@@ -74,7 +74,13 @@ export class AuthService implements IAuthService {
         };
     }
 
-    async logOut(sessionUuid: string): Promise<void> {
-        await this.sessionService.deleteByUuid(sessionUuid)
+    async logOut(refreshToken: string): Promise<boolean> {
+        const payload = this.tokenService.validateRefreshToken(refreshToken)
+        if (!payload || !("sessionUuid" in payload) || !("userId" in payload)) {
+            throw new HttpException("Unauthorized", HttpStatus.UNAUTHORIZED)
+        }
+        const session = await this.sessionService.deleteByUuid(payload.sessionUuid)
+        return !!session;
+
     }
 }

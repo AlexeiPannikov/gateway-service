@@ -1,7 +1,7 @@
 import {MiddlewareConsumer, Module} from '@nestjs/common';
-import { ConfigModule } from '@nestjs/config';
-import { AuthModule } from './infrastructure/modules/auth.module';
-import { typeOrmModule } from './infrastructure/db/orm/TypeOrmModule';
+import {ConfigModule} from '@nestjs/config';
+import {AuthModule} from './infrastructure/modules/auth.module';
+import {typeOrmModule} from './infrastructure/db/orm/TypeOrmModule';
 import {CheckAuthMiddleware} from "./infrastructure/middlewares/CheckAuth.middleware";
 import {ITokenService} from "./core/services/TokenService/interface/ITokenService";
 import {TokenService} from "./core/services/TokenService/TokenService";
@@ -20,50 +20,52 @@ import {SessionService} from "./core/services/SessionService/SessionService";
 import {SessionEntity} from "./infrastructure/db/entities/Session/Session.entity";
 import {IAuthService} from "./core/services/AuthService/interface/IAuthService";
 import {AuthService} from "./core/services/AuthService/AuthService";
+import {SharedModule} from "@app/shared";
 
 @Module({
-  imports: [
-    ConfigModule.forRoot({ isGlobal: true, envFilePath: './../../../.env' }),
-    typeOrmModule,
-    TypeOrmModule.forFeature([UserEntity, SessionEntity]),
-    AuthModule,
-  ],
-  controllers: [],
-  providers: [
-    {
-      provide: IUserService,
-      useClass: UserService,
-    },
-    {
-      provide: IUserRepository,
-      useClass: UserRepositoryImpl,
-    },
-    {
-      provide: ITokenService,
-      useClass: TokenService,
-    },
-    {
-      provide: IAuthService,
-      useClass: AuthService,
-    },
-    {
-      provide: IActivationService,
-      useClass: EmailActivationService,
-    },
-    {
-      provide: ISessionRepository,
-      useClass: SessionRepositoryImpl,
-    },
-    {
-      provide: ISessionService,
-      useClass: SessionService,
-    },
-  ],
+    imports: [
+        ConfigModule.forRoot({isGlobal: true, envFilePath: './.env'}),
+        typeOrmModule,
+        TypeOrmModule.forFeature([UserEntity, SessionEntity]),
+        AuthModule,
+        SharedModule
+    ],
+    controllers: [],
+    providers: [
+        {
+            provide: IUserService,
+            useClass: UserService,
+        },
+        {
+            provide: IUserRepository,
+            useClass: UserRepositoryImpl,
+        },
+        {
+            provide: ITokenService,
+            useClass: TokenService,
+        },
+        {
+            provide: IAuthService,
+            useClass: AuthService,
+        },
+        {
+            provide: IActivationService,
+            useClass: EmailActivationService,
+        },
+        {
+            provide: ISessionRepository,
+            useClass: SessionRepositoryImpl,
+        },
+        {
+            provide: ISessionService,
+            useClass: SessionService,
+        },
+    ],
 })
 export class AppModule {
-  configure(consumer: MiddlewareConsumer) {
-    consumer
-        .apply(CheckAuthMiddleware)
-        .forRoutes('auth/log-out', 'users/get-all-users');
-  }
+    configure(consumer: MiddlewareConsumer) {
+        consumer
+            .apply(CheckAuthMiddleware)
+            .forRoutes('auth/log-out', 'users/get-all-users');
+    }
 }

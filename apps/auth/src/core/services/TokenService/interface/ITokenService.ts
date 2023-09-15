@@ -1,8 +1,4 @@
-import {SaveRefreshTokenDto} from '../dto/SaveRefreshToken.dto';
-import {Token} from '../../../entities/Token/Token';
-import {GenerateTokensPayloadDto} from "../dto/generateTokensPayload.dto";
-import {User} from "../../../entities/User/User";
-import {UpdateRefreshTokenDto} from "../dto/UpdateRefreshToken.dto";
+import {GenerateTokensPayloadDto} from "../dto/GenerateTokensPayload.dto";
 
 export interface ITokenService {
     generateTokens(payload: GenerateTokensPayloadDto): {

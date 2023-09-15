@@ -17,8 +17,8 @@ import {Request, Response} from 'express';
 import {ResponseInterceptor} from '../../../interceptors/ResponseInterceptor';
 import * as process from 'process';
 import {ITokenService} from "../../../../core/services/TokenService/interface/ITokenService";
-import {SignUpRequestDto} from "./requests/SignUpRequest.dto";
-import {SignInRequestDto} from "./requests/SignInRequest.dto";
+import {SignUpRequestDto} from "../requests/SignUpRequest.dto";
+import {SignInRequestDto} from "../requests/SignInRequest.dto";
 import {UserResponse} from "../../UserControllers/UserHttpController/responses/UserResponse";
 import {IAuthService} from "../../../../core/services/AuthService/interface/IAuthService";
 import {ISessionService} from "../../../../core/services/SessionService/interface/ISessionService";
@@ -155,6 +155,7 @@ export class AuthHttpController {
                 }
             }
             return {
+                payload,
                 isValid: true,
             }
         } catch (e) {
