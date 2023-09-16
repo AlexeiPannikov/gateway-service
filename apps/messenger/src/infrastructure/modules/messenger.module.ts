@@ -10,6 +10,8 @@ import {UserRoomEntity} from "../db/entities/UserRoom/UserRoom.entity";
 import * as process from "process";
 import {IRoomService} from "../../core/services/RoomService/interface/IRoomService";
 import {RoomService} from "../../core/services/RoomService/RoomService";
+import {IRoomRepository} from "../../core/repositories/RoomRepository/IRoomRepository";
+import {RoomRepositoryImpl} from "../db/repositories/RoomRepository/RoomRepositoryImpl";
 
 @Module({
     imports: [
@@ -26,7 +28,11 @@ import {RoomService} from "../../core/services/RoomService/RoomService";
         MessengerGateway,
         {
             provide: IRoomService,
-            useClass: RoomService
+            useClass: RoomService,
+        },
+        {
+            provide: IRoomRepository,
+            useClass: RoomRepositoryImpl,
         },
     ],
 })

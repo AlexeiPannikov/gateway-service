@@ -11,7 +11,7 @@ export class TokenService implements ITokenService {
 
     generateTokens(payload: GenerateTokensPayloadDto) {
         const accessToken = jwt.sign(payload, process.env.JWT_ACCESS_SECRET, {
-            expiresIn: '5m',
+            expiresIn: '50m',
         });
         const refreshToken = jwt.sign(payload, process.env.JWT_REFRESH_SECRET, {
             expiresIn: '24h',

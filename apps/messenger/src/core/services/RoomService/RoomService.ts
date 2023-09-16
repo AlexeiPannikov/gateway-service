@@ -3,6 +3,7 @@ import {Inject, Injectable} from "@nestjs/common";
 import {Room} from "../../entities/Room/Room";
 import {AddUserToRoomDto} from "./interface/dto/AddUserToRoom.dto";
 import {IRoomRepository} from "../../repositories/RoomRepository/IRoomRepository";
+import {WsException} from "@nestjs/websockets";
 
 @Injectable()
 export class RoomService implements IRoomService {
@@ -18,7 +19,11 @@ export class RoomService implements IRoomService {
     }
 
     async create(userId: number): Promise<Room> {
-        return await this.roomRepository.create(userId)
+        const room =  await this.roomRepository.create(userId)
+        if (!room) {
+            throw new WsException("Room was not created")
+        }
+        return room
     }
 
     async delete(id: number): Promise<Room> {
