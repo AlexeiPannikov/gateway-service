@@ -1,6 +1,9 @@
+import {UserRoleEnum} from "./UserRoleEnum";
+
 export class User {
   id: number;
   name: string;
+  role: UserRoleEnum;
   email: string;
   password: string;
   isActivated: boolean;

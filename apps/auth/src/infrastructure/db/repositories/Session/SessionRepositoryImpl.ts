@@ -5,18 +5,21 @@ import {Repository} from "typeorm";
 import {SessionEntity} from "../../entities/Session/Session.entity";
 import {SessionMappers} from "../../mappers/Session/SessionMappers";
 import {ISessionRepository} from "../../../../core/repositories/SessionRepository/ISessionRepository";
+import {UserEntity} from "../../entities/User/User.entity";
 
 export class SessionRepositoryImpl implements ISessionRepository {
 
     constructor(
         @InjectRepository(SessionEntity)
         private readonly sessionRepository: Repository<SessionEntity>,
+        @InjectRepository(UserEntity)
+        private readonly userRepository: Repository<UserEntity>,
     ) {
     }
 
     async create(dto: CreateSessionDto): Promise<Session> {
         const entity = new SessionEntity()
-        entity.userId = dto.userId
+        entity.user = await this.userRepository.findOneBy({id: dto.userId})
         entity.expiredAt = dto.expiredDate
         const data = await this.sessionRepository.save(entity)
         return SessionMappers.toDomain(data)

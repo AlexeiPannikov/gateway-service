@@ -7,7 +7,7 @@ import {
     Inject,
     Param,
     Post, Req,
-    Res,
+    Res, UseGuards,
     UseInterceptors,
     UsePipes,
     ValidationPipe,
@@ -19,9 +19,10 @@ import * as process from 'process';
 import {ITokenService} from "../../../../core/services/TokenService/interface/ITokenService";
 import {SignUpRequestDto} from "../requests/SignUpRequest.dto";
 import {SignInRequestDto} from "../requests/SignInRequest.dto";
-import {UserResponse} from "../../UserControllers/UserHttpController/responses/UserResponse";
+import {UserResponse} from "../../UserControllers/responses/UserResponse";
 import {IAuthService} from "../../../../core/services/AuthService/interface/IAuthService";
 import {ISessionService} from "../../../../core/services/SessionService/interface/ISessionService";
+import {AccessGuard} from "../../../guards/Access.guard";
 
 @Controller('auth')
 @UseInterceptors(ResponseInterceptor)
@@ -90,6 +91,7 @@ export class AuthHttpController {
         }
     }
 
+    @UseGuards(AccessGuard)
     @Get('log-out')
     async logOut(
         @Req() request: Request,

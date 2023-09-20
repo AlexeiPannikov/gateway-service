@@ -1,13 +1,8 @@
 import {
-    Body,
     Controller,
-    Get,
     HttpException,
     HttpStatus,
     Inject,
-    Param,
-    Post, Req,
-    Res,
     UseInterceptors,
     UsePipes,
     ValidationPipe,
@@ -17,7 +12,7 @@ import {ResponseInterceptor} from '../../../interceptors/ResponseInterceptor';
 import {ITokenService} from "../../../../core/services/TokenService/interface/ITokenService";
 import {SignUpRequestDto} from "../requests/SignUpRequest.dto";
 import {SignInRequestDto} from "../requests/SignInRequest.dto";
-import {UserResponse} from "../../UserControllers/UserHttpController/responses/UserResponse";
+import {UserResponse} from "../../UserControllers/responses/UserResponse";
 import {IAuthService} from "../../../../core/services/AuthService/interface/IAuthService";
 import {ISessionService} from "../../../../core/services/SessionService/interface/ISessionService";
 import {Ctx, MessagePattern, Payload, RmqContext} from "@nestjs/microservices";
@@ -40,7 +35,6 @@ export class AuthRabbitMqController {
     ) {
     }
 
-    @UsePipes(new ValidationPipe())
     @MessagePattern({cmd: 'sign-up'})
     async signUp(
         @Ctx() context: RmqContext,
@@ -59,7 +53,6 @@ export class AuthRabbitMqController {
         }
     }
 
-    @UsePipes(new ValidationPipe())
     @MessagePattern({cmd: 'activate'})
     async activate(
         @Ctx() context: RmqContext,
@@ -77,7 +70,6 @@ export class AuthRabbitMqController {
         }
     }
 
-    @UsePipes(new ValidationPipe())
     @MessagePattern({cmd: 'sign-in'})
     async signIn(
         @Ctx() context: RmqContext,
@@ -96,7 +88,6 @@ export class AuthRabbitMqController {
         }
     }
 
-    @UsePipes(new ValidationPipe())
     @MessagePattern({cmd: 'log-out'})
     async logOut(
         @Ctx() context: RmqContext,
@@ -114,7 +105,6 @@ export class AuthRabbitMqController {
         }
     }
 
-    @UsePipes(new ValidationPipe())
     @MessagePattern({cmd: 'refresh'})
     async refresh(
         @Ctx() context: RmqContext,
@@ -135,7 +125,6 @@ export class AuthRabbitMqController {
         }
     }
 
-    @UsePipes(new ValidationPipe())
     @MessagePattern({cmd: 'check-access-token'})
     async checkToken(
         @Ctx() context: RmqContext,

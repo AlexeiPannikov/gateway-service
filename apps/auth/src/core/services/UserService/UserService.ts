@@ -67,4 +67,15 @@ export class UserService implements IUserService {
         }
         return user
     }
+
+    async getUserById(id: number): Promise<User> {
+        const user = await this.userRepository.getUserById(id)
+        if (!user) {
+            throw new HttpException(
+                `User with this id is not exist`,
+                HttpStatus.BAD_REQUEST
+            )
+        }
+        return user
+    }
 }

@@ -15,9 +15,8 @@ export class SessionEntity {
     @Column({generated: "uuid"})
     uuid: string
 
-    @ManyToOne(() => UserEntity, (u: UserEntity) => u.id, {nullable: false})
-    @JoinColumn({name: 'userId'})
-    userId: number;
+    @ManyToOne(() => UserEntity, (u: UserEntity) => u.sessions, {nullable: false})
+    user: UserEntity;
 
     @CreateDateColumn()
     createdAt: string;

@@ -1,5 +1,5 @@
 import { Module } from '@nestjs/common';
-import { AuthHttpController } from '../controllers/AuthControllers/AuthHttpController/AuthHttpController';
+import { AuthHttpController } from '../controllers/AuthControllers/AuthHttpController/AuthHttp.controller';
 import { TokenService } from '../../core/services/TokenService/TokenService';
 import { EmailActivationService } from '../../core/services/ActivationServices/EmailService/EmailActivationService';
 import { UserRepositoryImpl } from '../db/repositories/User/UserRepositoryImpl';
@@ -18,13 +18,14 @@ import {ISessionService} from "../../core/services/SessionService/interface/ISes
 import {SessionService} from "../../core/services/SessionService/SessionService";
 import {IAuthService} from "../../core/services/AuthService/interface/IAuthService";
 import {AuthService} from "../../core/services/AuthService/AuthService";
-import {UserHttpController} from "../controllers/UserControllers/UserHttpController/UserHttpController";
-import {AuthRabbitMqController} from "../controllers/AuthControllers/AuthRabbitMqController/AuthRabbitMqController";
+import {AuthRabbitMqController} from "../controllers/AuthControllers/AuthRabbitMqController/AuthRabbitMq.controller";
 import {SharedService} from "@app/shared";
+import {UserRabbitMqController} from "../controllers/UserControllers/UserRabbitMqController/UserRabbitMq.controller";
+import {UserHttpController} from "../controllers/UserControllers/UserHttpController/UserHttp.controller";
 
 @Module({
   imports: [TypeOrmModule.forFeature([UserEntity, SessionEntity])],
-  controllers: [AuthHttpController, AuthRabbitMqController, UserHttpController],
+  controllers: [AuthRabbitMqController, UserRabbitMqController],
   providers: [
     ResponseInterceptor,
     {
