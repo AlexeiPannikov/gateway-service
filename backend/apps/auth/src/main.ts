@@ -1,7 +1,7 @@
 import {NestFactory} from '@nestjs/core';
 import {AppModule} from './infrastructure/modules/app.module';
 import {ConfigService} from '@nestjs/config';
-import cookieParser from 'cookie-parser';
+import * as cookieParser from 'cookie-parser';
 import {ISessionService} from "./core/services/SessionService/interface/ISessionService";
 import {SharedService} from "@app/shared";
 

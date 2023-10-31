@@ -1,8 +1,7 @@
 import {NestFactory} from '@nestjs/core';
 import {StaffGatewayModule} from './staff-gateway.module';
 import {ConfigService} from "@nestjs/config";
-import cookieParser from "cookie-parser";
-import * as csurf from "csurf";
+import * as cookieParser from "cookie-parser";
 import helmet from "helmet";
 
 async function bootstrap() {

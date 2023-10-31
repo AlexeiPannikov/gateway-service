@@ -15,7 +15,7 @@ import {SignInRequestDto} from "../requests/SignInRequest.dto";
 import {UserResponse} from "../../UserControllers/responses/UserResponse";
 import {IAuthService} from "../../../../core/services/AuthService/interface/IAuthService";
 import {ISessionService} from "../../../../core/services/SessionService/interface/ISessionService";
-import {Ctx, MessagePattern, Payload, RmqContext} from "@nestjs/microservices";
+import {Ctx, MessagePattern, Payload, RmqContext, RpcException} from "@nestjs/microservices";
 import {SharedService} from "@app/shared";
 
 @Controller('auth')
@@ -49,7 +49,7 @@ export class AuthRabbitMqController {
             }
         } catch (e) {
             console.log(e);
-            return e;
+            throw new RpcException(e)
         }
     }
 
@@ -66,7 +66,7 @@ export class AuthRabbitMqController {
             }
         } catch (e) {
             console.log(e);
-            return e;
+            throw new RpcException(e)
         }
     }
 
@@ -84,7 +84,7 @@ export class AuthRabbitMqController {
             }
         } catch (e) {
             console.log(e);
-            return e;
+            throw new RpcException(e)
         }
     }
 
@@ -101,7 +101,7 @@ export class AuthRabbitMqController {
             }
         } catch (e) {
             console.log(e);
-            return e;
+            throw new RpcException(e)
         }
     }
 
@@ -111,17 +111,37 @@ export class AuthRabbitMqController {
         @Payload() refreshToken: string,
     ) {
         try {
-            console.log(refreshToken)
             this.sharedService.acknowledgeMessage(context)
             const data = await this.authService.refreshToken(refreshToken);
-            console.log(data)
             return {
                 user: new UserResponse(data.user),
                 tokens: data.tokens
             };
         } catch (e) {
             console.log(e);
-            return e;
+            throw new RpcException(e)
+        }
+    }
+
+    @MessagePattern({cmd: 'me'})
+    async me(
+        @Ctx() context: RmqContext,
+        @Payload() accessToken: string,
+    ) {
+        try {
+            this.sharedService.acknowledgeMessage(context)
+            const userData = this.tokenService.validateAccessToken(accessToken)
+            if (!userData || !userData?.userId) {
+                const exception = new HttpException("Unauthorized", HttpStatus.UNAUTHORIZED)
+                return  new RpcException(exception)
+            }
+            const user = await this.userService.getUserById(userData.userId);
+            return {
+                user: new UserResponse(user),
+            };
+        } catch (e) {
+            console.log(e);
+            throw new RpcException(e)
         }
     }
 

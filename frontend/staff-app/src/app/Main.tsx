@@ -7,7 +7,7 @@ import {UserOutlined} from '@ant-design/icons';
 
 const {Header, Content, Footer, Sider} = Layout;
 
-function App() {
+function Main() {
 
     const location = useLocation()
     const navigate = useNavigate()
@@ -30,9 +30,9 @@ function App() {
     ]
 
     useEffect(() => {
-        if (items.length) {
-            navigate(items[0]?.key)
-        }
+        // if (items.length) {
+        //     navigate(items[0]?.key)
+        // }
     }, [])
 
     return (
@@ -62,4 +62,4 @@ function App() {
     )
 }
 
-export default App
+export default Main

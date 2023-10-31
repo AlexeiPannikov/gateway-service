@@ -34,6 +34,7 @@ export class AuthHttpController {
                 body
             )
             const data = await lastValueFrom(res)
+            console.log(data)
             if (
                 data.data.user.role !== "ADMIN"
                 && data.data.user.role !== "WORKER"
@@ -105,6 +106,25 @@ export class AuthHttpController {
                 httpOnly: true,
             });
             return data
+        } catch (e) {
+            console.log(e)
+            return e
+        }
+    }
+
+    @UseGuards(AuthGuard)
+    @Get("me")
+    async me(
+        @Req() request: Request,
+    ) {
+        const authorization = request.headers["authorization"]
+        const accessToken = authorization.split(" ")[1]
+        try {
+            const res = this.authService.send(
+                {cmd: "me"},
+                accessToken
+            )
+            return  await lastValueFrom(res)
         } catch (e) {
             console.log(e)
             return e

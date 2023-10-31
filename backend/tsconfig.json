@@ -3,7 +3,7 @@
     "module": "CommonJS",
     "declaration": true,
     "removeComments": true,
-    "moduleResolution": "node16",
+    "moduleResolution": "commonjs",
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
     "allowSyntheticDefaultImports": true,
