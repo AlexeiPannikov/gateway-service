@@ -2,7 +2,7 @@ import {
     Controller,
     HttpException,
     HttpStatus,
-    Inject,
+    Inject, UseFilters,
     UseInterceptors,
     UsePipes,
     ValidationPipe,
@@ -17,9 +17,12 @@ import {IAuthService} from "../../../../core/services/AuthService/interface/IAut
 import {ISessionService} from "../../../../core/services/SessionService/interface/ISessionService";
 import {Ctx, MessagePattern, Payload, RmqContext, RpcException} from "@nestjs/microservices";
 import {SharedService} from "@app/shared";
+import {MicroserviceExceptionFilter} from "@app/shared/microservice-exeption.filter";
 
 @Controller('auth')
-@UseInterceptors(ResponseInterceptor)
+@UsePipes(new ValidationPipe())
+@UseFilters(new MicroserviceExceptionFilter())
+// @UseInterceptors(ResponseInterceptor)
 export class AuthRabbitMqController {
     constructor(
         @Inject(IUserService)
@@ -41,15 +44,13 @@ export class AuthRabbitMqController {
         @Payload() dto: SignUpRequestDto,
     ) {
         try {
-            this.sharedService.acknowledgeMessage(context)
             const data = await this.authService.signUp(dto);
             const user = new UserResponse(data.user)
             return {
                 user
             }
         } catch (e) {
-            console.log(e);
-            throw new RpcException(e)
+            throw e
         }
     }
 
@@ -59,13 +60,11 @@ export class AuthRabbitMqController {
         @Payload() link: string,
     ) {
         try {
-            this.sharedService.acknowledgeMessage(context)
             const user = await this.userService.activate(link);
             return {
                 user: new UserResponse(user)
             }
         } catch (e) {
-            console.log(e);
             throw new RpcException(e)
         }
     }
@@ -76,14 +75,13 @@ export class AuthRabbitMqController {
         @Payload() dto: SignInRequestDto,
     ) {
         try {
-            this.sharedService.acknowledgeMessage(context)
+            // this.sharedService.acknowledgeMessage(context)
             const data = await this.authService.signIn(dto);
             return {
                 user: new UserResponse(data.user),
                 tokens: data.tokens
             }
         } catch (e) {
-            console.log(e);
             throw new RpcException(e)
         }
     }
@@ -94,13 +92,11 @@ export class AuthRabbitMqController {
         @Payload() refreshToken: string,
     ) {
         try {
-            this.sharedService.acknowledgeMessage(context)
             const res = await this.authService.logOut(refreshToken);
             return {
                 success: res
             }
         } catch (e) {
-            console.log(e);
             throw new RpcException(e)
         }
     }
@@ -111,14 +107,12 @@ export class AuthRabbitMqController {
         @Payload() refreshToken: string,
     ) {
         try {
-            this.sharedService.acknowledgeMessage(context)
             const data = await this.authService.refreshToken(refreshToken);
             return {
                 user: new UserResponse(data.user),
                 tokens: data.tokens
             };
         } catch (e) {
-            console.log(e);
             throw new RpcException(e)
         }
     }
@@ -129,18 +123,16 @@ export class AuthRabbitMqController {
         @Payload() accessToken: string,
     ) {
         try {
-            this.sharedService.acknowledgeMessage(context)
             const userData = this.tokenService.validateAccessToken(accessToken)
             if (!userData || !userData?.userId) {
                 const exception = new HttpException("Unauthorized", HttpStatus.UNAUTHORIZED)
-                return  new RpcException(exception)
+                return new RpcException(exception)
             }
             const user = await this.userService.getUserById(userData.userId);
             return {
                 user: new UserResponse(user),
             };
         } catch (e) {
-            console.log(e);
             throw new RpcException(e)
         }
     }
@@ -151,7 +143,6 @@ export class AuthRabbitMqController {
         @Payload() accessToken: string,
     ) {
         try {
-            this.sharedService.acknowledgeMessage(context)
             if (!accessToken) {
                 return new HttpException("Unauthorized", HttpStatus.UNAUTHORIZED)
             }
@@ -172,8 +163,7 @@ export class AuthRabbitMqController {
                 isValid: true,
             }
         } catch (e) {
-            console.log(e);
-            return e;
+            throw new RpcException(e)
         }
     }
 }

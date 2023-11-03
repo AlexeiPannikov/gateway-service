@@ -1,4 +1,4 @@
-import {Roles} from "./Roles";
+import {Roles} from "../../../../entities/authorized-user/models/Roles";
 
 export interface User {
     id: number;

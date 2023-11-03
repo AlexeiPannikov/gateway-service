@@ -3,5 +3,6 @@ import {baseQueryWithReAuth} from "../../app/BaseQuery";
 
 export const api = createApi({
     baseQuery: baseQueryWithReAuth,
-    endpoints: () => ({})
+    tagTypes: ["Me"],
+    endpoints: () => ({}),
 })

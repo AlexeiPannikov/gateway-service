@@ -1,10 +1,15 @@
-import React, {PropsWithChildren} from 'react';
-import {Alert, Card, Form, Input, Space} from "antd";
-import {SignInRequest, UiCard} from "../../../../shared";
+import React from 'react';
+import {Alert, Form, Input} from "antd";
 import {SignInButton} from "./SignInButton";
+import {UiCard} from "../../../../shared";
+import {SignInRequest} from "../api/SignInRequest";
+import {useLogInMutation} from "../api/AuthApi";
+import {useAppSelector} from "../../../../app/hooks";
 
 export const LoginForm = () => {
     const [form] = Form.useForm();
+    const [, loginResult] = useLogInMutation({fixedCacheKey: "signIn"})
+    const {user} = useAppSelector(state => state.authSliceReducer)
 
     return (
         <UiCard style={{flexBasis: "500px", flexShrink: 1}}>
@@ -16,6 +21,7 @@ export const LoginForm = () => {
                 <Form.Item<SignInRequest>
                     label="Email"
                     name="email"
+                    initialValue={"alexeipannicov@icloud.com"}
                     rules={[{required: true, message: 'Please input your email!'}, {
                         type: "email",
                         message: "Email is not valid!"
@@ -26,7 +32,7 @@ export const LoginForm = () => {
                 <Form.Item<SignInRequest>
                     label="Password"
                     name="password"
-
+                    initialValue={"1AsDfGhw34rwdcxfgryLJHKJHGLjrtetr2"}
                     rules={[{required: true, message: 'Please input your password!'}]}
                 >
                     <Input type={"password"}/>
@@ -34,8 +40,14 @@ export const LoginForm = () => {
                 <Form.Item>
                     <SignInButton form={form}/>
                 </Form.Item>
+                {user?.name}
                 {
-
+                    loginResult.isError
+                    &&
+                    <Alert
+                        type={"error"}
+                        message={loginResult?.error?.data?.messages?.join("\n")}
+                    />
                 }
             </Form>
         </UiCard>

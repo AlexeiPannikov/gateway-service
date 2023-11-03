@@ -24,6 +24,7 @@ import {IAuthService} from "../../../../core/services/AuthService/interface/IAut
 import {ISessionService} from "../../../../core/services/SessionService/interface/ISessionService";
 import {AccessGuard} from "../../../guards/Access.guard";
 
+@UsePipes(new ValidationPipe())
 @Controller('auth')
 @UseInterceptors(ResponseInterceptor)
 export class AuthHttpController {
@@ -39,7 +40,6 @@ export class AuthHttpController {
     ) {
     }
 
-    @UsePipes(new ValidationPipe())
     @Post('sign-up')
     async signUp(
         @Body() body: SignUpRequestDto,
@@ -54,7 +54,6 @@ export class AuthHttpController {
         }
     }
 
-    @UsePipes(new ValidationPipe())
     @Get('activate/:link')
     async activate(
         @Param('link') link: string,
@@ -69,7 +68,6 @@ export class AuthHttpController {
         }
     }
 
-    @UsePipes(new ValidationPipe())
     @Post('sign-in')
     async signIn(
         @Body() body: SignInRequestDto,
@@ -107,7 +105,6 @@ export class AuthHttpController {
         }
     }
 
-    @UsePipes(new ValidationPipe())
     @Get('refresh')
     async refresh(
         @Req() request: Request,
@@ -130,7 +127,6 @@ export class AuthHttpController {
         }
     }
 
-    @UsePipes(new ValidationPipe())
     @Get('check-access-token')
     async checkToken(
         @Req() request: Request

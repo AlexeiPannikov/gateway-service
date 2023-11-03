@@ -1,6 +1,6 @@
 import {combineReducers, configureStore} from "@reduxjs/toolkit";
 import {api} from "../shared";
-import {authSliceReducer} from "../features";
+import {authSliceReducer} from "../entities";
 
 const rootReducer = combineReducers({
   authSliceReducer,
@@ -11,7 +11,7 @@ export const setupStore = () => {
   return configureStore({
     reducer: rootReducer,
     middleware: (getDefaultMiddleware) =>
-        getDefaultMiddleware()
+        getDefaultMiddleware({serializableCheck: false})
             .concat(api.middleware)
   })
 }

@@ -6,10 +6,10 @@ import {
     Param,
     Post,
     Req,
-    Res,
+    Res, UseFilters,
     UseGuards,
 } from '@nestjs/common';
-import {ClientProxy} from "@nestjs/microservices";
+import {ClientProxy, RpcException} from "@nestjs/microservices";
 import {RegistrationRequestDto} from "../dto/auth/requests/RegistrationRequest.dto";
 import {AuthGuard} from "@app/shared";
 import {Request, Response} from "express";
@@ -24,6 +24,7 @@ export class AuthHttpController {
     }
 
     @Post("sign-in")
+    // @UseFilters(new RpcExceptionToHttpExceptionFilter())
     async signIn(
         @Body() body: RegistrationRequestDto,
         @Res({passthrough: true}) response: Response,
@@ -34,7 +35,6 @@ export class AuthHttpController {
                 body
             )
             const data = await lastValueFrom(res)
-            console.log(data)
             if (
                 data.data.user.role !== "ADMIN"
                 && data.data.user.role !== "WORKER"
@@ -48,8 +48,7 @@ export class AuthHttpController {
             });
             return data
         } catch (e) {
-            console.log(e)
-            return e
+            throw new RpcException(e)
         }
     }
 
@@ -69,8 +68,7 @@ export class AuthHttpController {
             response.clearCookie("refreshToken")
             return data
         } catch (e) {
-            console.log(e)
-            return e
+            return new RpcException(e)
         }
     }
 
@@ -84,8 +82,7 @@ export class AuthHttpController {
                 link
             )
         } catch (e) {
-            console.log(e)
-            return e
+            return new RpcException(e)
         }
     }
 
@@ -107,8 +104,7 @@ export class AuthHttpController {
             });
             return data
         } catch (e) {
-            console.log(e)
-            return e
+            return new RpcException(e)
         }
     }
 
@@ -124,10 +120,9 @@ export class AuthHttpController {
                 {cmd: "me"},
                 accessToken
             )
-            return  await lastValueFrom(res)
+            return await lastValueFrom(res)
         } catch (e) {
-            console.log(e)
-            return e
+            return new RpcException(e)
         }
     }
 }

@@ -1,21 +1,25 @@
-import { fetchBaseQuery } from '@reduxjs/toolkit/query'
+import {fetchBaseQuery} from '@reduxjs/toolkit/query'
 import type {
     BaseQueryFn,
     FetchArgs,
     FetchBaseQueryError,
 } from '@reduxjs/toolkit/query'
-import { Mutex } from 'async-mutex'
-import {ACCESS_TOKEN, logOut, refreshAccessToken, setUser} from "../features";
-import {RefreshResponse} from "../shared";
+import {Mutex} from 'async-mutex'
+import {RefreshResponse} from "../features";
+import {ACCESS_TOKEN, logOut, refreshAccessToken, setUser} from "../entities";
 
 // create a new mutex
 const mutex = new Mutex()
 const baseQuery = fetchBaseQuery({
     baseUrl: import.meta.env.VITE_APP_BASE_URL,
-    // prepareHeaders: (headers) => ({
-    //     ...headers,
-    //     authorization: localStorage.getItem(ACCESS_TOKEN)
-    // })
+    prepareHeaders: (headers) => {
+        const token = localStorage.getItem(ACCESS_TOKEN)
+        if (token) {
+            headers.set("authorization", `Bearer ${token}`)
+        }
+        headers.set('Access-Control-Allow-Credentials', window.location.origin)
+    },
+    credentials: "include",
 })
 export const baseQueryWithReAuth: BaseQueryFn<
     string | FetchArgs,
@@ -35,9 +39,9 @@ export const baseQueryWithReAuth: BaseQueryFn<
                     api,
                     extraOptions
                 )
-                const data = refreshResult.data as {data: RefreshResponse}
-                if (refreshResult.data) {
-                    api.dispatch(refreshAccessToken(data.data))
+                const data = refreshResult.data as { data: RefreshResponse }
+                if (data?.data) {
+                    api.dispatch(refreshAccessToken(data.data.tokens.accessToken))
                     api.dispatch(setUser(data.data.user))
                     // retry the initial query
                     result = await baseQuery(args, api, extraOptions)

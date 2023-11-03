@@ -1,6 +1,6 @@
 import {createSlice, PayloadAction} from "@reduxjs/toolkit";
 import {AuthorizedUser} from "./AuthorizedUser";
-import {RefreshResponse, SignInResponse, User} from "../../../shared";
+import {Tokens} from "./Tokens";
 
 const initialState: { user: AuthorizedUser | null } = {
     user: null
@@ -14,18 +14,18 @@ const authSlice = createSlice({
     name: "auth",
     initialState,
     reducers: {
-        signIn: (state, action: PayloadAction<SignInResponse>) => {
-            state.user = action.payload.user
+        signIn: (state, action: PayloadAction<{user: AuthorizedUser, tokens: Tokens}>) => {
+            state.user = {...action.payload.user}
             setAccessToken(action.payload.tokens.accessToken)
         },
         logOut: (state, action: PayloadAction<undefined>) => {
             state.user = null
             localStorage.removeItem(ACCESS_TOKEN)
         },
-        refreshAccessToken: (state, action: PayloadAction<RefreshResponse>) => {
-            setAccessToken(action.payload.tokens.accessToken)
+        refreshAccessToken: (state, action: PayloadAction<string>) => {
+            setAccessToken(action.payload)
         },
-        setUser: (state, action: PayloadAction<User>) => {
+        setUser: (state, action: PayloadAction<AuthorizedUser>) => {
             state.user = new AuthorizedUser({...action.payload})
         },
     }

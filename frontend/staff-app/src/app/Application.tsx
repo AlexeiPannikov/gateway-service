@@ -7,12 +7,6 @@ const {Header, Content, Footer, Sider} = Layout;
 
 function Application() {
 
-    const navigate = useNavigate()
-
-    useEffect(() => {
-        navigate("/login")
-    }, []);
-
     return (
         <App style={{height: "100%", width: "100%"}}>
             <Outlet></Outlet>

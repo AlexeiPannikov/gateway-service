@@ -25,6 +25,9 @@ export class AuthService implements IAuthService {
     }
 
     async signIn(dto: SignInDto) {
+        if (!dto.password || !dto.email) {
+            throw new HttpException("Bad request", HttpStatus.BAD_REQUEST)
+        }
         const user = await this.userService.getUserByEmail(dto.email)
         const isEqualPass = bcrypt.compare(dto.password, user.password)
         if (!isEqualPass) {

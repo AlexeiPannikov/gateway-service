@@ -1,19 +1,21 @@
 import {
     Body,
     Controller, Get, HttpException, HttpStatus,
-    Inject, Param,
+    Inject, Param, UseFilters,
     UsePipes,
     ValidationPipe,
 } from '@nestjs/common';
 import {IUserService} from '../../../../core/services/UserService/interface/IUserService';
 import {UserResponse} from "../../UserControllers/responses/UserResponse";
 import {Ctx, MessagePattern, Payload, RmqContext} from "@nestjs/microservices";
-import {SharedService} from "@app/shared";
+import {MicroserviceExceptionFilter, SharedService} from "@app/shared";
 import {CreateUserRequestDto} from "../requests/CreateUserRequest.dto";
 import {ITokenService} from "../../../../core/services/TokenService/interface/ITokenService";
 import {ISessionService} from "../../../../core/services/SessionService/interface/ISessionService";
 
 @Controller('users')
+@UsePipes(new ValidationPipe())
+@UseFilters(new MicroserviceExceptionFilter())
 export class UserRabbitMqController {
     constructor(
         @Inject(IUserService)
@@ -32,7 +34,6 @@ export class UserRabbitMqController {
         @Ctx() context: RmqContext,
     ) {
         try {
-            this.sharedService.acknowledgeMessage(context)
             const users = await this.userService.getAllUsers();
             return {
                 users: users.map(user => new UserResponse(user))
@@ -49,7 +50,6 @@ export class UserRabbitMqController {
         @Payload() id: number,
     ) {
         try {
-            this.sharedService.acknowledgeMessage(context)
             const user = await this.userService.getUserById(id);
             return {
                 user: new UserResponse(user)
@@ -66,7 +66,6 @@ export class UserRabbitMqController {
         @Payload() dto: CreateUserRequestDto
     ) {
         try {
-            this.sharedService.acknowledgeMessage(context)
             const user = await this.userService.createUser(dto);
             return {
                 user: new UserResponse(user)
@@ -83,7 +82,6 @@ export class UserRabbitMqController {
         @Payload() id: number
     ) {
         try {
-            this.sharedService.acknowledgeMessage(context)
             const user = await this.userService.deleteUser(id);
             return {
                 user: new UserResponse(user)
@@ -100,7 +98,6 @@ export class UserRabbitMqController {
         @Payload() refreshToken: string,
     ) {
         try {
-            this.sharedService.acknowledgeMessage(context)
             if (!refreshToken) {
                 return new HttpException("Unauthorized", HttpStatus.UNAUTHORIZED)
             }

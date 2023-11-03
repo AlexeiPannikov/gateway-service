@@ -1,7 +1,10 @@
-import {api} from "../BaseApi";
-import {BaseResponse} from "../BaseResponse";
-import {RefreshResponse, SignInResponse, User, SignInRequest} from "./models";
-import {logOut, refreshAccessToken, setUser, signIn} from "../../../features";
+import {api} from "../../../../shared";
+import {BaseResponse} from "../../../../shared/api/BaseResponse";
+import {logOut, refreshAccessToken, setUser, signIn} from "../../../../entities";
+import {RefreshResponse} from "./RefreshResponse";
+import {SignInResponse} from "./SignInResponse";
+import {SignInRequest} from "./SignInRequest";
+import {User} from "../models/User";
 
 const authApi = api.injectEndpoints({
     endpoints: (builder) => ({
@@ -25,7 +28,7 @@ const authApi = api.injectEndpoints({
             onQueryStarted: async (arg, api) => {
                 const res = await api.queryFulfilled
                 if (res?.data?.data) {
-                    api.dispatch(refreshAccessToken(res.data.data))
+                    api.dispatch(refreshAccessToken(res.data.data.tokens.accessToken))
                 }
             }
         }),
@@ -34,29 +37,34 @@ const authApi = api.injectEndpoints({
                 url: "auth/me"
             }),
             onQueryStarted: async (arg, api) => {
-                const res = await api.queryFulfilled
-                if (res?.data?.data?.user) {
-                    api.dispatch(setUser(res.data.data.user))
+                try {
+                    const res = await api.queryFulfilled
+                    if (res?.data?.data?.user) {
+                        api.dispatch(setUser(res.data.data.user))
+                    }
+                } catch (e) {
+                    logOut()
                 }
-            }
+            },
+            providesTags: ["Me"],
         }),
-        logOut: builder.query<BaseResponse<undefined>, null>({
+        logOut: builder.mutation<BaseResponse<undefined>, null>({
             query: () => ({
-                url: "auth/refresh"
+                url: "auth/log-out"
             }),
             onQueryStarted: async (arg, api) => {
                 const res = await api.queryFulfilled
                 if (res?.data?.success) {
                     api.dispatch(logOut())
                 }
-            }
+            },
+            invalidatesTags: ["Me"],
         }),
     })
 })
 
 export const {
     useLogInMutation,
-    useLazyRefreshQuery,
-    useMeQuery,
-    useLazyLogOutQuery
+    useLazyMeQuery,
+    useLogOutMutation
 } = authApi
