@@ -7,15 +7,17 @@ import {
     Post,
     Req,
     Res, UseFilters,
-    UseGuards,
+    UseGuards, UseInterceptors,
 } from '@nestjs/common';
 import {ClientProxy, RpcException} from "@nestjs/microservices";
 import {RegistrationRequestDto} from "../dto/auth/requests/RegistrationRequest.dto";
 import {AuthGuard} from "@app/shared";
 import {Request, Response} from "express";
 import {lastValueFrom} from "rxjs";
+import {ResponseInterceptor} from "../../../interceptors/ResponseInterceptor";
 
 @Controller("auth")
+@UseInterceptors(ResponseInterceptor)
 export class AuthHttpController {
     constructor(
         @Inject("AUTH_SERVICE")
@@ -24,7 +26,6 @@ export class AuthHttpController {
     }
 
     @Post("sign-in")
-    // @UseFilters(new RpcExceptionToHttpExceptionFilter())
     async signIn(
         @Body() body: RegistrationRequestDto,
         @Res({passthrough: true}) response: Response,
@@ -36,19 +37,19 @@ export class AuthHttpController {
             )
             const data = await lastValueFrom(res)
             if (
-                data.data.user.role !== "ADMIN"
-                && data.data.user.role !== "WORKER"
-                && data.data.user.role !== "OPERATOR"
+                data.user.role !== "ADMIN"
+                && data.user.role !== "WORKER"
+                && data.user.role !== "OPERATOR"
             ) {
                 return new HttpException("Forbidden", HttpStatus.FORBIDDEN)
             }
-            response.cookie('refreshToken', data.data.tokens.refreshToken, {
+            response.cookie('refreshToken', data.tokens.refreshToken, {
                 maxAge: 30 * 24 * 60 * 60 * 1000,
                 httpOnly: true,
             });
             return data
         } catch (e) {
-            throw new RpcException(e)
+            throw e
         }
     }
 
@@ -68,7 +69,7 @@ export class AuthHttpController {
             response.clearCookie("refreshToken")
             return data
         } catch (e) {
-            return new RpcException(e)
+            throw e
         }
     }
 
@@ -82,7 +83,7 @@ export class AuthHttpController {
                 link
             )
         } catch (e) {
-            return new RpcException(e)
+            return e
         }
     }
 
@@ -98,13 +99,13 @@ export class AuthHttpController {
                 refreshToken
             )
             const data = await lastValueFrom(res)
-            response.cookie('refreshToken', data.data.tokens.refreshToken, {
+            response.cookie('refreshToken', data.tokens.refreshToken, {
                 maxAge: 30 * 24 * 60 * 60 * 1000,
                 httpOnly: true,
             });
             return data
         } catch (e) {
-            return new RpcException(e)
+            throw e
         }
     }
 
@@ -122,7 +123,7 @@ export class AuthHttpController {
             )
             return await lastValueFrom(res)
         } catch (e) {
-            return new RpcException(e)
+            throw e
         }
     }
 }

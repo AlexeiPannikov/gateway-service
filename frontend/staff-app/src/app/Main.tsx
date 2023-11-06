@@ -1,9 +1,11 @@
 import "./App.css"
-import {Layout, Menu, Breadcrumb, theme} from "antd";
+import {Layout, Menu, Breadcrumb, theme, MenuProps} from "antd";
 import React, {SyntheticEvent, useEffect} from "react";
 import {ItemType, MenuItemType} from "antd/es/menu/hooks/useItems";
 import {Outlet, useLocation, useNavigate, useRoutes} from "react-router-dom";
 import {UserOutlined} from '@ant-design/icons';
+import {AuthUserMenu} from "../entities";
+import {authApi, useLogOutMutation} from "../features";
 
 const {Header, Content, Footer, Sider} = Layout;
 
@@ -11,6 +13,7 @@ function Main() {
 
     const location = useLocation()
     const navigate = useNavigate()
+    const [logout, logoutRes] = useLogOutMutation()
 
     const {
         token: {colorBgContainer},
@@ -35,10 +38,29 @@ function Main() {
         // }
     }, [])
 
+    const onClickAuthUserMenu: MenuProps['onClick'] = (e) => {
+        if (e.key === "logout") {
+            logout(null)
+                .unwrap()
+                .then(() => {
+                    authApi.util.resetApiState()
+                    navigate("/login")
+                })
+        }
+    }
+
     return (
         <Layout className="main-layout">
-            <Header style={{display: 'flex', alignItems: 'center'}}>
-                <div className="demo-logo"/>
+            <Header style={{
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: "space-between",
+                boxShadow: "0 1px 2px 0 rgba(0, 0, 0, 0.03), 0 1px 6px -1px rgba(0, 0, 0, 0.02), 0 2px 4px 0 rgba(0, 0, 0, 0.02)",
+                zIndex: 10
+            }}
+            >
+                <div></div>
+                <AuthUserMenu onClick={onClickAuthUserMenu}/>
             </Header>
             <Content style={{padding: '0 50px'}}>
                 <div style={{display: "flex", flexDirection: "column", height: "100%"}}>

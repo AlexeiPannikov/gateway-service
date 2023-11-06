@@ -1,12 +1,12 @@
-import {api} from "../../../../shared";
-import {BaseResponse} from "../../../../shared/api/BaseResponse";
-import {logOut, refreshAccessToken, setUser, signIn} from "../../../../entities";
+import {api} from "../../../shared";
+import {BaseResponse} from "../../../shared/api/BaseResponse";
+import {logOut, refreshAccessToken, setUser, signIn} from "../../../entities";
 import {RefreshResponse} from "./RefreshResponse";
 import {SignInResponse} from "./SignInResponse";
 import {SignInRequest} from "./SignInRequest";
 import {User} from "../models/User";
 
-const authApi = api.injectEndpoints({
+export const authApi = api.injectEndpoints({
     endpoints: (builder) => ({
         logIn: builder.mutation<BaseResponse<SignInResponse>, SignInRequest>({
             query: (body) => ({
@@ -53,12 +53,14 @@ const authApi = api.injectEndpoints({
                 url: "auth/log-out"
             }),
             onQueryStarted: async (arg, api) => {
-                const res = await api.queryFulfilled
-                if (res?.data?.success) {
+                try {
+                    const res = await api.queryFulfilled
                     api.dispatch(logOut())
+                } catch (e) {
+
                 }
             },
-            invalidatesTags: ["Me"],
+            // invalidatesTags: ["Me"],
         }),
     })
 })
@@ -66,5 +68,5 @@ const authApi = api.injectEndpoints({
 export const {
     useLogInMutation,
     useLazyMeQuery,
-    useLogOutMutation
+    useLogOutMutation,
 } = authApi

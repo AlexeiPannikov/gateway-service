@@ -16,7 +16,7 @@ import {UserResponse} from "../../UserControllers/responses/UserResponse";
 import {IAuthService} from "../../../../core/services/AuthService/interface/IAuthService";
 import {ISessionService} from "../../../../core/services/SessionService/interface/ISessionService";
 import {Ctx, MessagePattern, Payload, RmqContext, RpcException} from "@nestjs/microservices";
-import {SharedService} from "@app/shared";
+import {BaseError, SharedService} from "@app/shared";
 import {MicroserviceExceptionFilter} from "@app/shared/microservice-exeption.filter";
 
 @Controller('auth')
@@ -82,7 +82,7 @@ export class AuthRabbitMqController {
                 tokens: data.tokens
             }
         } catch (e) {
-            throw new RpcException(e)
+            throw e
         }
     }
 
@@ -97,7 +97,7 @@ export class AuthRabbitMqController {
                 success: res
             }
         } catch (e) {
-            throw new RpcException(e)
+            throw e
         }
     }
 
@@ -113,7 +113,7 @@ export class AuthRabbitMqController {
                 tokens: data.tokens
             };
         } catch (e) {
-            throw new RpcException(e)
+            throw e
         }
     }
 
@@ -125,15 +125,17 @@ export class AuthRabbitMqController {
         try {
             const userData = this.tokenService.validateAccessToken(accessToken)
             if (!userData || !userData?.userId) {
-                const exception = new HttpException("Unauthorized", HttpStatus.UNAUTHORIZED)
-                return new RpcException(exception)
+                throw new BaseError({
+                    messages: ["Unauthorized"],
+                    code: HttpStatus.UNAUTHORIZED,
+                })
             }
             const user = await this.userService.getUserById(userData.userId);
             return {
                 user: new UserResponse(user),
             };
         } catch (e) {
-            throw new RpcException(e)
+            throw e
         }
     }
 

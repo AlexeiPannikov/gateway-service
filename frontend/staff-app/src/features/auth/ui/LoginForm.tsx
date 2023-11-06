@@ -1,10 +1,10 @@
 import React from 'react';
 import {Alert, Form, Input} from "antd";
 import {SignInButton} from "./SignInButton";
-import {UiCard} from "../../../../shared";
+import {UiCard} from "../../../shared";
 import {SignInRequest} from "../api/SignInRequest";
 import {useLogInMutation} from "../api/AuthApi";
-import {useAppSelector} from "../../../../app/hooks";
+import {useAppSelector} from "../../../app/hooks";
 
 export const LoginForm = () => {
     const [form] = Form.useForm();

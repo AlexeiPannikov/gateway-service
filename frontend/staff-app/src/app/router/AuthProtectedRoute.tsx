@@ -16,9 +16,9 @@ export const AuthProtectedRoute = (props: RouteProps) => {
     }, []);
 
     return (
-        !result.isUninitialized && !result.isLoading && !result.isError
+        !result.isUninitialized && !result.isLoading
             ?
-            user || result?.data.data?.user
+            user || result?.data?.data?.user
                 ? <Outlet/>
                 : <Navigate
                     to="/login"

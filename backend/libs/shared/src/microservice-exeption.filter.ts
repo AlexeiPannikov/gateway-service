@@ -8,15 +8,26 @@ import {HttpAdapterHost} from "@nestjs/core";
 @Catch()
 export class MicroserviceExceptionFilter implements ExceptionFilter {
 
-    catch(exception: HttpException | Error): Observable<never> | void {
+    catch(exception: HttpException | Error | RpcException | BaseError): Observable<never> | void {
+
         console.log(exception)
+
+
+        if (exception instanceof BaseError) {
+            console.log("MicroserviceExceptionFilter", exception)
+            return throwError(() => (new RpcException(exception)))
+        }
+
+        if (exception instanceof RpcException) {
+            return throwError(() => exception)
+        }
+
         if (exception instanceof HttpException) {
             const httpStatus = exception.getStatus()
             const httpRes = exception.getResponse() as { details?: unknown, message: unknown }
-
             return throwError(() => (new RpcException(new BaseError({
                 code: httpStatus,
-                messages:  Array.isArray(httpRes.message) ? httpRes.message as string[] : httpRes.message || Array.isArray(exception.message) ? (exception.message as any) : [],
+                messages: Array.isArray(httpRes.message) ? httpRes.message as string[] : httpRes.message || Array.isArray(exception.message) ? (exception.message as any) : [],
                 details: Array.isArray(httpRes.details) ? httpRes.details as string[] : httpRes.message as string[] || [],
             }))))
         }

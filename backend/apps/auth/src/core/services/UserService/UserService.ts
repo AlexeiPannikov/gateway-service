@@ -7,6 +7,7 @@ import {IActivationService} from '../ActivationServices/interfaces/IActivationSe
 import {SignUpDto} from "../AuthService/dto/SignUp.dto";
 import {User} from "../../entities/User/User";
 import * as process from "process";
+import {BaseError} from "@app/shared";
 
 @Injectable()
 export class UserService implements IUserService {
@@ -22,10 +23,10 @@ export class UserService implements IUserService {
         const {password, email} = dto;
         const candidate = await this.userRepository.getUserByEmail(email);
         if (candidate) {
-            throw new HttpException(
-                `User with email ${dto.email} already exist`,
-                HttpStatus.BAD_REQUEST,
-            );
+            throw new BaseError({
+                code: HttpStatus.BAD_REQUEST,
+                messages: [`User with email ${dto.email} already exist`]
+            })
         }
         const salt = await bcrypt.genSalt(3)
         const hashPassword = await bcrypt.hash(password, salt);
@@ -47,7 +48,10 @@ export class UserService implements IUserService {
             activationLink,
         );
         if (!user) {
-            throw new HttpException(`User is not exist`, HttpStatus.BAD_REQUEST);
+            throw new BaseError({
+                code: HttpStatus.BAD_REQUEST,
+                messages: [`User is not exist`]
+            })
         }
         user.isActivated = true;
         return await this.userRepository.updateUser(user);
@@ -60,10 +64,10 @@ export class UserService implements IUserService {
     async getUserByEmail(email: string): Promise<User> {
         const user = await this.userRepository.getUserByEmail(email)
         if (!user) {
-            throw new HttpException(
-                `User with this email is not exist`,
-                HttpStatus.BAD_REQUEST
-            )
+            throw new BaseError({
+                code: HttpStatus.BAD_REQUEST,
+                messages: [`User with this email is not exist`]
+            })
         }
         return user
     }
@@ -71,10 +75,10 @@ export class UserService implements IUserService {
     async getUserById(id: number): Promise<User> {
         const user = await this.userRepository.getUserById(id)
         if (!user) {
-            throw new HttpException(
-                `User with this id is not exist`,
-                HttpStatus.BAD_REQUEST
-            )
+            throw new BaseError({
+                code: HttpStatus.BAD_REQUEST,
+                messages: [`User with this id is not exist`]
+            })
         }
         return user
     }

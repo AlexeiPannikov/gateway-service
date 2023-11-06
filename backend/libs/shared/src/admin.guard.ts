@@ -24,6 +24,6 @@ export class AdminGuard implements CanActivate {
         if (!data) {
             return false
         }
-        return data.data?.user?.role === "ADMIN"
+        return data?.user?.role === "ADMIN"
     }
 }

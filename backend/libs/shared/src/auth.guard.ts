@@ -1,6 +1,7 @@
 import {Injectable, CanActivate, ExecutionContext, Inject, HttpException, HttpStatus} from '@nestjs/common';
 import {lastValueFrom, Observable} from 'rxjs';
-import {ClientProxy} from "@nestjs/microservices";
+import {ClientProxy, RpcException} from "@nestjs/microservices";
+import {BaseError} from "@app/shared/models/BaseError";
 
 @Injectable()
 export class AuthGuard implements CanActivate {
@@ -16,14 +17,18 @@ export class AuthGuard implements CanActivate {
     ) {
         const request = context.switchToHttp().getRequest();
         const authorization = request.headers["authorization"]
+        const exception = new BaseError({
+            code: HttpStatus.UNAUTHORIZED,
+            messages: ["Unauthorized"]
+        })
         if (!authorization) {
-            throw new HttpException("Unauthorized", HttpStatus.UNAUTHORIZED)
+            throw exception
         }
         const accessToken = authorization.split(' ')[1]
         const res = this.authService.send({cmd: "check-access-token"}, accessToken)
         const data = await lastValueFrom(res, {defaultValue: {data: {isValid: false}}})
-        if (!data?.data?.isValid) {
-            throw new HttpException("Unauthorized", HttpStatus.UNAUTHORIZED)
+        if (!data?.isValid) {
+            throw exception
         }
         return true
     }

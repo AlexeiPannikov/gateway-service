@@ -18,7 +18,6 @@ export class AllExceptionsFilter implements ExceptionFilter {
 
         if (exception instanceof RpcException) {
             const {error} = exception.getError() as any;
-            console.log(error)
             httpAdapter.reply(ctx.getResponse(), error, error.code || HttpStatus.INTERNAL_SERVER_ERROR);
             return
         }
@@ -35,13 +34,19 @@ export class AllExceptionsFilter implements ExceptionFilter {
             return;
         }
 
-        const exc = exception as Error
+        if (exception instanceof BaseError) {
+            httpAdapter.reply(ctx.getResponse(), exception, exception.code);
+            return;
+        }
+
+        const exc = (exception as any).error || exception
+        const code = exc?.code || 500
 
         const responseBody = new BaseError({
-            code: 500,
-            stack: exc.stack.split("\n"),
-            messages: [exc.message],
+            code,
+            stack: code === 500 ? exc.stack?.split("\n") : null,
+            messages: exc['messages'],
         });
-        httpAdapter.reply(ctx.getResponse(), responseBody, 500);
+        httpAdapter.reply(ctx.getResponse(), responseBody, code);
     }
 }

@@ -1,8 +1,15 @@
 import {ThemeConfig, theme} from "antd";
 
-const {defaultAlgorithm} = theme
+const {defaultAlgorithm, darkAlgorithm} = theme
 
 export const lightTheme: ThemeConfig = {
-    token: {},
+    token: {
+
+    },
     algorithm: defaultAlgorithm,
+    components: {
+        Layout: {
+            headerBg: "white"
+        }
+    }
 }
